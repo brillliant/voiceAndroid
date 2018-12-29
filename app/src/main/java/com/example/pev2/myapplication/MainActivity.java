@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d("myTag", "---onOptionsItemSelected");
+        Log.d("myTag", "---onOptionsItemSelected ");
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
