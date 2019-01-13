@@ -1,6 +1,9 @@
 package com.example.pev2.myapplication;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -64,12 +67,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         copyAssets(hmmDir);
         saveFile(jsgf, grammar.getJsgf());
         saveFile(dict, grammar.getDict());
-        mRecognizer = SpeechRecognizerSetup.defaultSetup()
-                .setAcousticModel(hmmDir)
-                .setDictionary(dict)
-                .setBoolean("-remove_noise", false)
-                .setKeywordThreshold(1e-7f)
-                .getRecognizer();
+
+        SpeechRecognizerSetup speechRecognizerSetup = SpeechRecognizerSetup.defaultSetup();
+        speechRecognizerSetup.setAcousticModel(hmmDir);
+        speechRecognizerSetup.setDictionary(dict);
+        speechRecognizerSetup.setBoolean("-remove_noise", false);
+        speechRecognizerSetup.setKeywordThreshold(1e-7f);
+        mRecognizer = speechRecognizerSetup.getRecognizer();
+
         mRecognizer.addKeyphraseSearch(KWS_SEARCH, hotword);
         mRecognizer.addGrammarSearch(COMMAND_SEARCH, jsgf);
         Log.d("MainActivity", "speaklog listen end");
@@ -86,6 +91,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void saveFile(File f, String content) throws IOException {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            System.out.println("нет доступа");
+        }
+
         File dir = f.getParentFile();
         if (!dir.exists() && !dir.mkdirs()) {
             throw new IOException("Cannot create directory: " + dir);
